@@ -5,45 +5,60 @@
 #include <unistd.h>
 #include <iostream>
 #include <mutex>
+#include <fstream>
+//
 using namespace std;
-class Singleton
+template <typename T> class Singleton
         {
                 private:
                 static Singleton* my_instance;
-                Singleton();
+                T my_t;
+                Singleton(T temp);
                 mutex mtx;
 
                 public:
-                static Singleton* Instance();
+                static Singleton* Instance(T temp);
                 void Destroy();
         };
-Singleton* Singleton::my_instance = 0;
-Singleton* Singleton::Instance()
-{
+template<typename T>
+Singleton<T> * Singleton<T>::my_instance = 0;
+template<typename T>
+Singleton<T> *Singleton<T>::Instance(T temp) {
 
-    if (my_instance == 0)
-    {
-        my_instance = new Singleton();
+    if (my_instance == 0) {
+        my_instance = new
+        Singleton(temp);
     }
 
     return my_instance;
 }
-
-Singleton::Singleton()
-{mtx.lock();}
-
-void Singleton::Destroy(){
-    my_instance=0;
+template<typename T>
+Singleton<T>::Singleton(T temp) {
+my_t = temp;
+mtx.lock();
+}
+template<typename T>
+void Singleton<T>::Destroy() {
+    my_instance = 0;
     mtx.unlock();
 }
 
-int main()
-{
-    //new Singleton(); // Won't work
-    Singleton* s = Singleton::Instance(); // Ok
-    Singleton* r = Singleton::Instance();
-
-    /* The addresses will be the same. */
+int main() {
+//    new Singleton(); // Won't work
+    FILE *fptr;
+//    cout << inputFile.fileDesc << endl;//made up call
+    Singleton<FILE*>* s = Singleton<FILE*>::Instance(fptr); // Ok
+    Singleton<FILE*>* r = Singleton<FILE*>::Instance(fptr);
+//
+//    /* The addresses will be the same. */
+//    std::cout << s << std::endl;
+//    std::cout << r << std::endl;
+//    pthread_t t1;
+//    pthread_t t2;
+//    Singleton * s = pthread_create(&t1, NULL, Singleton::Instance, NULL);
+//    Singleton * r = pthread_create(&t2, NULL, Singleton::Instance, NULL);
+//    pthread_join(t1, NULL);
+//    pthread_join(t2, NULL);
     std::cout << s << std::endl;
     std::cout << r << std::endl;
 }
