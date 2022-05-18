@@ -88,24 +88,51 @@ void destoryQ(struct Queue *q) {
     free(q);
 }
 
+typedef struct active_object {
+    struct Queue *q;
+
+    void (*q_fun_ptr)();
+
+    void (*f_fun_ptr)();
+} active_object;
+
+active_object newAO(struct Queue *q, void (*q_fun_ptr)(), void (*f_fun_ptr)()) {
+    active_object active_obj;
+    active_obj.f_fun_ptr = f_fun_ptr;
+    active_obj.q_fun_ptr = q_fun_ptr;
+    active_obj.q = q;
+    struct QNode *n = q->front;
+    while (n != NULL) {
+        q_fun_ptr();
+        n = n->next;
+    }
+    f_fun_ptr();
+    return active_obj;
+}
+
+void destroyAO(active_object obj){
+    destoryQ(obj.q);
+    pthread_cancel(obj.q_fun_ptr);
+    pthread_cancel(obj.f_fun_ptr);
+    printf("destroy AO finished!!\n");
+}
+
+void fun1() {
+    printf("Hell World!\n");
+}
+
+void fun2() {
+    printf("Ciiiiii!\n");
+}
+
 int main() {
     struct Queue *q = createQ();
-//    enQ(q, 10);
-//    enQ(q, 20);
-//    deQ(q);
-//    deQ(q);
-//    enQ(q, 30);
-//    enQ(q, 40);
-//    enQ(q, 50);
-//    deQ(q);
-//    printf("Queue Front : %d \n", q->front->key);
-//    printf("Queue Rear : %d\n", q->rear->key);
-//    destoryQ(q);
+
     pthread_t tid1, tid2;
-    int x=5;
-    void * param[2] = {q, &x};
+    int x = 5;
+    void *param[2] = {q, &x};
     // Create thread 1
-    pthread_create(&tid1, NULL, deQ,q);
+    pthread_create(&tid1, NULL, deQ, q);
 
     // sleep for 1 sec so that thread 1
     // would get a chance to run first
@@ -117,5 +144,13 @@ int main() {
     // wait for the completion of thread 2
     pthread_join(tid2, NULL);
 //    printf("Queue Rear : %d\n", q->rear->key);
+    enQ(q, 5);
+    enQ(q, 10);
+    enQ(q, 17);
+    active_object obj = newAO(q, &fun1, &fun2);
+    destroyAO(obj);
+
+
+
     return 0;
 }
