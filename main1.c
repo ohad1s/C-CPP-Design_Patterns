@@ -110,7 +110,7 @@ active_object newAO(struct Queue *q, void (*q_fun_ptr)(), void (*f_fun_ptr)()) {
     return active_obj;
 }
 
-void destroyAO(active_object obj){
+void destroyAO(active_object obj,){
     destoryQ(obj.q);
     pthread_cancel(obj.q_fun_ptr);
     pthread_cancel(obj.f_fun_ptr);
@@ -123,6 +123,38 @@ void fun1() {
 
 void fun2() {
     printf("Ciiiiii!\n");
+}
+
+void ao1(char *str){
+    int len = strlen(str);
+    for (int i = 0; i < len; i++)
+    {
+        if (str[i] == 'z')
+        {
+            str[i] = 'a';
+        }
+        else if (str[i] =='Z')
+        {
+            str[i] = 'A';
+        }
+        else{
+            str[i] += 1;
+        }
+    }
+}
+void ao2(char *str){
+    int len = strlen(str);
+    for (int i = 0; i < len; i++)
+    {
+        if (65 <= str[i] && str[i] <=90)
+        {
+            str[i] += 32;
+        }
+        else{
+            str[i] -= 32;
+        }
+
+    }
 }
 
 int main() {
