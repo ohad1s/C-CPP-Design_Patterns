@@ -8,12 +8,14 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <memory.h>
+#include <netinet/in.h>
 
 // Declaration of thread condition variable
 pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
 // declaring mutex
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-
 
 // A linked list (LL) node to store a queue entry
 struct QNode {
@@ -44,6 +46,7 @@ struct Queue *createQ() {
 
 // The function to add a key k to q
 void enQ(struct Queue *q, void *k) {
+    pthread_mutex_lock(&lock);
     // Create a new LL node
     struct QNode *temp = newNode(k);
 
@@ -51,12 +54,14 @@ void enQ(struct Queue *q, void *k) {
     if (q->rear == NULL) {
         q->front = q->rear = temp;
         pthread_cond_signal(&cond1);
+        pthread_mutex_unlock(&lock);
         return;
     }
 
     // Add the new node at the end of queue and change rear
     q->rear->next = temp;
     q->rear = temp;
+    pthread_mutex_unlock(&lock);
 }
 
 // Function to remove a key from given queue q
@@ -91,9 +96,11 @@ void destoryQ(struct Queue *q) {
 typedef struct active_object {
     struct Queue *q;
 
-    void (*q_fun_ptr)();
+    void* (*q_fun_ptr)(void*);
 
-    void (*f_fun_ptr)();
+    void* (*f_fun_ptr)(void*);
+
+    pthread_t my_pid;
 } active_object;
 
 active_object newAO(struct Queue *q, void (*q_fun_ptr)(), void (*f_fun_ptr)()) {
@@ -110,12 +117,14 @@ active_object newAO(struct Queue *q, void (*q_fun_ptr)(), void (*f_fun_ptr)()) {
     return active_obj;
 }
 
-void destroyAO(active_object obj,){
+void destroyAO(active_object obj){
     destoryQ(obj.q);
-    pthread_cancel(obj.q_fun_ptr);
-    pthread_cancel(obj.f_fun_ptr);
+//    pthread_cancel(obj.q_fun_ptr);
+//    pthread_cancel(obj.f_fun_ptr);
+    pthread_cancel(obj.my_pid);
     printf("destroy AO finished!!\n");
 }
+
 
 void fun1() {
     printf("Hell World!\n");
