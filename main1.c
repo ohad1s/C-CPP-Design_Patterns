@@ -12,7 +12,7 @@
 #include <memory.h>
 #include <netinet/in.h>
 #include <sys/types.h>
-static int sock = -1;
+#include "sock.h"
 
 // Declaration of thread condition variable
 pthread_cond_t cond1 = PTHREAD_COND_INITIALIZER;
@@ -226,7 +226,7 @@ void *server_handle(void *varpg) {
 void *play_server(void *qu) {
     q = (struct Queue *) qu;
 //    ------- create socket -----------
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock == -1) {
         printf("Could not create socket : %d", sock);
         return NULL;
