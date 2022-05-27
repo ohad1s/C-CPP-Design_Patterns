@@ -2,7 +2,11 @@
 CXX=gcc
 CPP=g++
 
-all:  main1 ao_client #singleton pollServer clientReactor   server client guard
+all: pipline_test main1 ao_client #singleton pollServer clientReactor   server client guard
+pipline_test: pipline_test.o
+	$(CXX) pipline_test.o -o pipline_test -lpthread
+pipline_test.o: pipline_test.c
+	$(CXX) -c pipline_test.c
 main1: main1.o
 	$(CXX) main1.o -o main1 -lpthread
 main1.o: main1.c
@@ -38,4 +42,4 @@ server.o: server.c
 client.o: client.c
 	gcc -c client.c
 clean :
-	rm -f *.o main1 guard singleton pollServer clientReactor ao_client
+	rm -f *.o main1 guard singleton pollServer clientReactor ao_client pipline_test
