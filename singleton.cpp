@@ -8,7 +8,7 @@
 #include <fstream>
 //
 using namespace std;
-
+pthread_mutex_t mtx2;
 template<typename T>
 class Singleton {
 private:
@@ -32,10 +32,11 @@ template<typename T>
 Singleton<T> *Singleton<T>::Instance(T temp) {
 
     if (my_instance == 0) {
+        pthread_mutex_lock(&mtx2);
         my_instance = new
                 Singleton(temp);
     }
-
+    pthread_mutex_unlock(&mtx2);
     return my_instance;
 }
 
@@ -49,6 +50,7 @@ template<typename T>
 void Singleton<T>::Destroy() {
     my_instance = 0;
     mtx.unlock();
+
 }
 
 int main() {

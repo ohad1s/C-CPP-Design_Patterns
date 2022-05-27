@@ -2,7 +2,7 @@
 CXX=gcc
 CPP=g++
 
-all:  pollServer clientReactor #main1 #  server client #guard singleton
+all:  main1 #singleton pollServer clientReactor   server client guard
 main1: main1.o
 	$(CXX) main1.o -o main1 -lpthread
 main1.o: main1.c
