@@ -71,8 +71,8 @@ void* my_send(void* arg)
 int main()
 {
 //------ open socket
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
+    int sock1 = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock1 == -1) {
         perror("socket");
         return -1;
     }
@@ -83,7 +83,7 @@ int main()
     serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
     serverAddress.sin_port = htons(5000);  //network order
     printf("client sock is on ^^\n");
-
+sleep(10);
     int clientSocket = connect(sock, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
     if (clientSocket == -1)
     {

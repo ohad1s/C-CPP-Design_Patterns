@@ -7,9 +7,9 @@ int main() {
     pid1 = fork();
     if (pid1 == 0) {
         sleep(1);
-        system("gnome-terminal --command=\"./ao_client\" ");
+        system("./ao_client");
     } else {
-        system("gnome-terminal --command=\"./main1\" ");
+        system("./main1");
     }
     return 1;
 }

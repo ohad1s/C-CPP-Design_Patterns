@@ -262,6 +262,8 @@ void *play_server(void *qu) {
     pthread_t t = client_thread_arr[i];
     while (t) {
         pthread_join(t, NULL);
+        i++;
+        t=client_thread_arr[i];
     }
     return NULL;
 }
