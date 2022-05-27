@@ -143,7 +143,7 @@ void *newAO_th(void *args) {
     newAO(ao->q, ao->q_fun_ptr, ao->f_fun_ptr);
 }
 
-void destroyAO(active_object* obj) {
+void destroyAO(active_object *obj) {
     destoryQ(obj->q);
     pthread_cancel(obj->my_pid);
     free(obj);
@@ -169,9 +169,15 @@ void *client_handle(void *varpg) {
     char *e_ch = (char *) calloc(3, 1);
     int number_of_msg_to_client = 0;
     while (number_of_msg_to_client < 3) {
+        printf("imin\n");
+        printf(" %d msgs..\n", number_of_msg_to_client);
         msg = recv(my_client_fd, my_buffer, 2000, 0);
+        printf("ha ha ha\n");
         if (msg == -1) {
             break;
+        }
+        else{
+            printf("msg is %s. ",my_buffer);
         }
         strncpy(e_ch, my_buffer, 3);
         if (strcmp(e_ch, "DIE") == 0) {
@@ -182,17 +188,18 @@ void *client_handle(void *varpg) {
         if (msg == 0) {
             break;
         }
-        my_buffer[strlen(my_buffer) - 1] = '\0';
+        my_buffer[strlen(my_buffer)] = '\0';
         char *msg_str = (char *) calloc(1, strlen(my_buffer));
         strcpy(msg_str, my_buffer);
         node_to_insert = newNode(msg_str);
         node_to_insert->sock_fd = my_client_fd;
+        printf("node to insert: %s \n", (char*)node_to_insert->key);
         enQ(q, node_to_insert);
         memset(e_ch, 0, 3);
         memset(my_buffer, 0, 2000);
         number_of_msg_to_client++;
     }
-
+    printf("finished here!");
     free(my_buffer);
     free(e_ch);
     return NULL;
@@ -207,6 +214,7 @@ void *server_handle(void *varpg) {
         if (getline(&input, &my_cleaner, stdin) == -1) {
             if (!feof(stdin)) { exit(1); }
         }
+        printf("the inpus is: %s. ",input);
         strncpy(e_ch, input, 3);
         if (strcmp(e_ch, "DIE") == 0) {
             break;
@@ -234,7 +242,7 @@ void *play_server(void *qu) {
     struct sockaddr_in serverAddress;
     memset(&serverAddress, 0, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(5000);
+    serverAddress.sin_port = htons(12000);
     if (bind(sock, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) == -1) {
         printf("Bind sock %d failed\n", sock);
         close(sock);
@@ -248,6 +256,7 @@ void *play_server(void *qu) {
     char *f = &c;
     pthread_create(&reciver_serv, NULL, server_handle, f);
     while (c != '\0') {
+        printf("while???: %d \n", where_am_i_client_arr);
         struct sockaddr_storage their_addr;
         socklen_t sin_size = sizeof(their_addr);
         int new_fd = accept(sock, (struct sockaddr *) &their_addr, &sin_size);
@@ -256,29 +265,36 @@ void *play_server(void *qu) {
             pthread_create(&thr, NULL, client_handle, &new_fd);
             client_thread_arr[where_am_i_client_arr] = thr;
             where_am_i_client_arr++;
+            printf("t num: %d \n", where_am_i_client_arr);
         }
     }
     int i = 0;
     pthread_t t = client_thread_arr[i];
+    printf("in here??\n");
     while (t) {
+        printf("maybe here??\n");
         pthread_join(t, NULL);
         i++;
-        t=client_thread_arr[i];
+        t = client_thread_arr[i];
     }
+    printf("NO here??\n");
     return NULL;
 }
 
 // -----------------------------------------------------------------
-void* fun1(void* arg) {
+void *fun1(void *arg) {
     printf("Ohad and Dvir!\n");
     return NULL;
 }
 
-void fun2() {
+void *fun2(void *arg) {
     printf("Ciiiiii!\n");
+    return NULL;
 }
 
 void *ao1(void *arg) {
+    printf("func ao1");
+
     if (!arg) {
         return NULL;
     }
@@ -302,6 +318,7 @@ void *ao1(void *arg) {
 }
 
 void *ao2(void *arg) {
+    printf("func ao2");
     if (!arg) {
         return NULL;
     }
@@ -323,6 +340,7 @@ void *ao2(void *arg) {
 }
 
 void *q_transpose1(void *arg) {
+    printf("func t1");
     if (!arg) {
         return NULL;
     }
@@ -337,6 +355,7 @@ void *q_transpose1(void *arg) {
 }
 
 void *q_transpose2(void *arg) {
+    printf("func t2");
     if (!arg) {
         return NULL;
     }
@@ -352,7 +371,7 @@ void *q_transpose2(void *arg) {
 }
 
 void *print_node(void *arg) {
-    struct QNode* n = (struct QNode*)arg;
+    struct QNode *n = (struct QNode *) arg;
     printf("%s ,", (char *) n->key);
     return NULL;
 }
@@ -370,10 +389,10 @@ void print_queue(struct Queue *q) {
     printf("\n");
 }
 
-void* msg_back(void* arg)
-{
-    struct QNode* n = (struct QNode* )arg;
-    send(n->sock_fd, n->key, strlen((char*)n->key), 0);
+void *msg_back(void *arg) {
+    printf("func msg back");
+    struct QNode *n = (struct QNode *) arg;
+    send(n->sock_fd, n->key, strlen((char *) n->key), 0);
     usleep(250);
     return NULL;
 }
@@ -390,20 +409,23 @@ int main() {
     obj->q = q;
     obj2->q = q;
     obj3->q = q2;
-    obj4->q=q3;
-    obj->q_fun_ptr = play_server;
+    obj4->q = q3;
+    obj->q_fun_ptr = fun2;
     obj->f_fun_ptr = fun1;
     obj2->q_fun_ptr = ao1;
     obj2->f_fun_ptr = q_transpose1;
     obj3->q_fun_ptr = ao2;
     obj3->f_fun_ptr = q_transpose2;
-    obj4->q_fun_ptr=msg_back;
-    obj4->f_fun_ptr=print_node;
+    obj4->q_fun_ptr = msg_back;
+    obj4->f_fun_ptr = print_node;
     pipline *pipline1 = (pipline *) (malloc(sizeof(pipline)));
     pipline1->first = obj;
     pipline1->second = obj2;
     pipline1->third = obj3;
-    pipline1->fourth - obj4;
+    pipline1->fourth = obj4;
+    pthread_t server_t;
+    pthread_create(&server_t, NULL, play_server, q);
+    pthread_join(server_t,NULL);
     pthread_t a_1, a_2, a_3, a_4;
     pthread_create(&a_1, NULL, newAO_th, pipline1->first);
     usleep(200);
@@ -412,13 +434,15 @@ int main() {
     pthread_create(&a_3, NULL, newAO_th, pipline1->third);
     usleep(200);
     pthread_create(&a_4, NULL, newAO_th, pipline1->fourth);
-
+    usleep(200);
     pipline1->first->my_pid = a_1;
     pipline1->second->my_pid = a_2;
     pipline1->third->my_pid = a_3;
     pipline1->fourth->my_pid = a_4;
-
-    sleep(200);
+    printf("im here!??????");
+    print_queue(q3);
+    sleep(5);
+    print_queue(q3);
     destroyAO(pipline1->first);
     destroyAO(pipline1->second);
     destroyAO(pipline1->third);
