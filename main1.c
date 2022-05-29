@@ -380,7 +380,7 @@ int main() {
     pipline1->fourth = obj4;
     pthread_t server_t;
     pthread_create(&server_t, NULL, play_server, q);
-    sleep(90);
+    sleep(10);
     print_queue(q);
 //    pthread_t a_1, a_2, a_3, a_4;
     pthread_t a_2, a_3, a_4;

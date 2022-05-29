@@ -2,11 +2,15 @@
 CXX=gcc
 CPP=g++
 
-all: main1 ao_client singleton pollServer clientReactor   server client guard
+all: main1 test_ao_client ao_client singleton pollServer clientReactor guard
 main1: main1.o
 	$(CXX) main1.o -o main1 -lpthread
 main1.o: main1.c
 	$(CXX) -c main1.c
+test_ao_client: test_ao_client.o
+	$(CXX) test_ao_client.o -o test_ao_client -lpthread
+test_ao_client.o: test_ao_client.c
+	$(CXX) -c test_ao_client.c
 ao_client: ao_client.o
 	$(CXX) ao_client.o -o ao_client -lpthread
 ao_client.o: ao_client.c
@@ -28,14 +32,5 @@ clientReactor: clientReactor.o
 clientReactor.o: clientReactor.cpp
 	$(CPP) -c clientReactor.cpp
 
-
-server: server.o
-	gcc server.o -o server -lpthread
-client: client.c
-	gcc -c client.c
-server.o: server.c
-	gcc -c server.c
-client.o: client.c
-	gcc -c client.c
 clean :
-	rm -f *.o main1 guard singleton pollServer clientReactor ao_client
+	rm -f *.o main1 guard singleton pollServer clientReactor ao_client test_ao_client

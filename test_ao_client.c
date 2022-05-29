@@ -1,3 +1,4 @@
+
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
@@ -14,19 +15,19 @@
 #include <netinet/in.h>
 #include <sys/types.h>
 #include "sock.h"
-static int sock1=-1;
-void* receive(void* arg)
-{
-    char *my_buffer = (char*)calloc(2000, 1);
+#include <time.h>
+#include <stdlib.h>
+
+static int sock1 = -1;
+
+void *receive(void *arg) {
+    char *my_buffer = (char *) calloc(2000, 1);
 
     int bytes = 0;
-    while ((bytes = recv(sock1, my_buffer, 2000, 0)) != -1 )
-    {
-        if (bytes == 0)
-        {
+    while ((bytes = recv(sock1, my_buffer, 2000, 0)) != -1) {
+        if (bytes == 0) {
             break;
-        }
-        else{
+        } else {
             printf("I got back the string: %s\n", my_buffer);
         }
     }
@@ -35,34 +36,60 @@ void* receive(void* arg)
 }
 
 
-void* my_send(void* arg)
-{
-    char str1[80];
-    char str2[80];
-    char str3[80];
-    printf("Enter your string: \n");
-    scanf("%s", str1);
-    printf("Your string is %s.\n", str1);
-    send(sock1, str1, strlen(str1), 0);
-    sleep(1);
-
-    printf("Enter your string: \n");
-    scanf("%s", str2);
-    printf("Your string is %s.\n", str2);
-    send(sock1, str2, strlen(str2), 0);
-    sleep(1);
-
-    printf("Enter your string: \n");
-    scanf("%s", str3);
-    printf("Your string is %s.\n", str3);
-    send(sock1, str3, strlen(str3), 0);
-    sleep(1);
-//    sleep(120);
+void *my_send(void *arg) {
+    char *a = "OhaD";
+    char *b = "dVir";
+    char *c = "yoSSi";
+    char *d = "Maccabi";
+    char *e = "Haifa";
+    char *f = "Omer";
+    char *g = "Haziza";
+    char *h = "HelloWorld";
+    char *i = "WOW";
+    for (int j=0; j<3; j++){
+        srand(time(NULL));
+        int r = rand()%8;
+        if (r==0){
+            send(sock1, a, strlen(a), 0);
+            sleep(1);
+        }
+        if (r==1){
+            send(sock1, b, strlen(b), 0);
+            sleep(1);
+        }
+        if (r==2){
+            send(sock1, c, strlen(c), 0);
+            sleep(1);
+        }
+        if (r==3){
+            send(sock1, d, strlen(d), 0);
+            sleep(1);
+        }
+        if (r==4){
+            send(sock1, e, strlen(e), 0);
+            sleep(1);
+        }
+        if (r==5){
+            send(sock1, f, strlen(f), 0);
+            sleep(1);
+        }
+        if (r==6){
+            send(sock1, g, strlen(g), 0);
+            sleep(1);
+        }
+        if (r==7){
+            send(sock1, h, strlen(h), 0);
+            sleep(1);
+        }
+        if (r==8){
+            send(sock1, i, strlen(i), 0);
+            sleep(1);
+        }
+    }
     return NULL;
 }
 
-int main()
-{
+int main() {
 //------ open socket
     sock1 = socket(AF_INET, SOCK_STREAM, 0);
     if (sock1 == -1) {
@@ -77,8 +104,7 @@ int main()
     serverAddress.sin_port = htons(12000);  //network order
     printf("client sock is on ^^\n");
     int clientSocket = connect(sock1, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
-    if (clientSocket == -1)
-    {
+    if (clientSocket == -1) {
         perror("socket");
         printf("listen failed");
         close(sock);
@@ -87,7 +113,7 @@ int main()
     printf("successfully logged in\n");
 //------------
 
-    pthread_t t1,t2;
+    pthread_t t1, t2;
 
     // exec rcv, send operations threads
     pthread_create(&t1, NULL, receive, NULL);
