@@ -5,7 +5,7 @@ Dvir Biton
 
 how to run:
 
-1. make
+make
 
 now for each exercise you have another exe to run:
 
