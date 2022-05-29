@@ -25,8 +25,7 @@ then for each client run ./clientReactor
 
 ## Testing:
 
-* run the server by the command: ./server
-* run the test file by the command: ./test 127.0.0.1
-* for each client open a new terminal and the run the command above again
+* for 1-3 (thread safe queue, active object, pipline): run ./main1 and then for each client run ./test_ao_client
+
 
 (Credit: all the credits are in the c/cpp files).
