@@ -15,30 +15,22 @@
 #include <sys/types.h>
 #include "sock.h"
 static int sock1=-1;
-static int connect_flag = 0;
 // DIE - in order to close socket
 void* receive(void* arg)
 {
     char *my_buffer = (char*)calloc(2000, 1);
-    connect_flag = 1;
+
     int bytes = 0;
     while ((bytes = recv(sock1, my_buffer, 2000, 0)) != -1 )
     {
         if (bytes == 0)
         {
-            printf("bytes here: %d", bytes );
-            connect_flag = 0;
             break;
         }
-        if (!strcmp(my_buffer, "DIE"))
-        {
-            printf("DIE here: %s", my_buffer );
-            connect_flag = 0;
-            break;
+        else{
+            printf("I got back the string: %s\n", my_buffer);
         }
-        memset(my_buffer, 0, 2000);
     }
-    printf("bytes here: %d\n", bytes );
     free(my_buffer);
     return NULL;
 }
@@ -67,7 +59,6 @@ void* my_send(void* arg)
     send(sock1, str3, strlen(str3), 0);
     sleep(1);
 //    sleep(120);
-    connect_flag = 0;
     return NULL;
 }
 
@@ -99,7 +90,6 @@ int main()
 
     pthread_t t1,t2;
 
-    connect_flag = 1;
     // exec rcv, send operations threads
     pthread_create(&t1, NULL, receive, NULL);
     pthread_create(&t2, NULL, my_send, NULL);
