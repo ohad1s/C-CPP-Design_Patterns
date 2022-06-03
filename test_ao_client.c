@@ -30,6 +30,7 @@ void *receive(void *arg) {
         } else {
             printf("I got back the string: %s\n", my_buffer);
         }
+        bzero(my_buffer,2000);
     }
     free(my_buffer);
     return NULL;
@@ -46,42 +47,51 @@ void *my_send(void *arg) {
     char *g = "Haziza";
     char *h = "HelloWorld";
     char *i = "WOW";
-    for (int j=0; j<3; j++){
+    for (int j=0; j<2; j++){
         srand(time(NULL));
         int r = rand()%8;
         if (r==0){
+            printf("send: %s \n", a);
             send(sock1, a, strlen(a), 0);
             sleep(1);
         }
         if (r==1){
+            printf("send: %s \n", b);
             send(sock1, b, strlen(b), 0);
             sleep(1);
         }
         if (r==2){
+            printf("send: %s \n", c);
             send(sock1, c, strlen(c), 0);
             sleep(1);
         }
         if (r==3){
+            printf("send: %s \n", d);
             send(sock1, d, strlen(d), 0);
             sleep(1);
         }
         if (r==4){
+            printf("send: %s \n", e);
             send(sock1, e, strlen(e), 0);
             sleep(1);
         }
         if (r==5){
+            printf("send: %s \n", f);
             send(sock1, f, strlen(f), 0);
             sleep(1);
         }
         if (r==6){
+            printf("send: %s \n", g);
             send(sock1, g, strlen(g), 0);
             sleep(1);
         }
         if (r==7){
+            printf("send: %s \n", h);
             send(sock1, h, strlen(h), 0);
             sleep(1);
         }
         if (r==8){
+            printf("send: %s \n", i);
             send(sock1, i, strlen(i), 0);
             sleep(1);
         }
@@ -102,7 +112,7 @@ int main() {
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
     serverAddress.sin_port = htons(12000);  //network order
-    printf("client sock is on ^^\n");
+    printf("Client is ready\n");
     int clientSocket = connect(sock1, (struct sockaddr *) &serverAddress, sizeof(serverAddress));
     if (clientSocket == -1) {
         perror("socket");

@@ -29,6 +29,7 @@ void* receive(void* arg)
         else{
             printf("I got back the string: %s\n", my_buffer);
         }
+        bzero(my_buffer,2000);
     }
     free(my_buffer);
     return NULL;
@@ -52,11 +53,11 @@ void* my_send(void* arg)
     send(sock1, str2, strlen(str2), 0);
     sleep(1);
 
-    printf("Enter your string: \n");
-    scanf("%s", str3);
-    printf("Your string is %s.\n", str3);
-    send(sock1, str3, strlen(str3), 0);
-    sleep(1);
+    // printf("Enter your string: \n");
+    // scanf("%s", str3);
+    // printf("Your string is %s.\n", str3);
+    // send(sock1, str3, strlen(str3), 0);
+    // sleep(1);
 //    sleep(120);
     return NULL;
 }
